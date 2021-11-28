@@ -19,6 +19,22 @@ NEWSPIDER_MODULE = 'hkfp.spiders'
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
 
+from boto3 import Session
+from dotenv import load_dotenv
+from datetime import datetime
+
+load_dotenv()
+
+session = Session()
+credentials = session.get_credentials()
+# Credentials are refreshable, so accessing your access key / secret key
+# separately can lead to a race condition. Use this to get an actual matched
+# set.
+current_credentials = credentials.get_frozen_credentials()
+AWS_ACCESS_KEY_ID=current_credentials.access_key
+AWS_SECRET_ACCESS_KEY=current_credentials.secret_key
+
+
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
 
@@ -62,20 +78,28 @@ ROBOTSTXT_OBEY = True
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'hkfp.pipelines.HkfpPipeline': 300,
-#}
+ITEM_PIPELINES = {
+    # 'scrapy.pipelines.files.S3FilesStore': 1,
+   'hkfp.pipelines.BadScrapePipeline': 300,
+}
+
+FEEDS = {
+    f"s3://hkfp/data/allscrape_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv": {
+        "format": "csv",
+        "encoding": "utf8"
+    }
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
-#AUTOTHROTTLE_ENABLED = True
+AUTOTHROTTLE_ENABLED = True
 # The initial download delay
-#AUTOTHROTTLE_START_DELAY = 5
+AUTOTHROTTLE_START_DELAY = 5
 # The maximum download delay to be set in case of high latencies
-#AUTOTHROTTLE_MAX_DELAY = 60
+AUTOTHROTTLE_MAX_DELAY = 60
 # The average number of requests Scrapy should be sending in parallel to
 # each remote server
-#AUTOTHROTTLE_TARGET_CONCURRENCY = 1.0
+AUTOTHROTTLE_TARGET_CONCURRENCY = 1.0
 # Enable showing throttling stats for every response received:
 #AUTOTHROTTLE_DEBUG = False
 
