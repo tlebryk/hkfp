@@ -1,4 +1,6 @@
-data/
+data/*
+!data/urls/
+!data/urls/posts.csv
 *__pycache__
 .vscode/
 .env
