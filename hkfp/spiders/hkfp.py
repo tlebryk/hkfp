@@ -1,6 +1,7 @@
 from datetime import datetime
 import scrapy
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
+# import nltk
 import pandas as pd
 from html_text import extract_text
 import logging
