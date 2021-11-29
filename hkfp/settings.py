@@ -31,8 +31,8 @@ credentials = session.get_credentials()
 # separately can lead to a race condition. Use this to get an actual matched
 # set.
 current_credentials = credentials.get_frozen_credentials()
-AWS_ACCESS_KEY_ID=current_credentials.access_key
-AWS_SECRET_ACCESS_KEY=current_credentials.secret_key
+# AWS_ACCESS_KEY_ID=current_credentials.access_key
+# AWS_SECRET_ACCESS_KEY=current_credentials.secret_key
 
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)

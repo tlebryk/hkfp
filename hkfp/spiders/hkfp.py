@@ -24,7 +24,7 @@ sid = SentimentIntensityAnalyzer()
 class HKFPSpider(scrapy.Spider):
     name = 'hkfp'
 
-    start_urls = pd.read_csv(fr"data\urls\posts.csv").url.to_list()[:5]
+    start_urls = pd.read_csv(fr"data/urls/posts.csv").url.to_list()[:5]
     logging.info(start_urls)
     
     def parse(self,response):
@@ -38,7 +38,8 @@ class HKFPSpider(scrapy.Spider):
         row = {
             'Date': response.xpath('//time/@datetime').get(),
             "Art_id": response.css("article::attr(id)").get(), 
-            "Url" : response.request.url,
+            "Original_url" : response.request.meta.get('redirect_urls', response.request.url),
+            "Response_url" : response.request.url,
             'Headline' : extract_text(response.xpath('//h1').get()),
             'Author' : extract_text(response.css("span.author.vcard").get()), # haven't found any multi author pieces...
             'Topics': response.xpath('//span[@class="tags-links"]/a/text()').getall(),
