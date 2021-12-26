@@ -11,15 +11,40 @@ from datetime import datetime
 import logging
 import os
 import json
+from scrapy.exporters import CsvItemExporter
+from scrapy import signals
+
+
+def item_type(item):
+    return type(item).__name__.replace('Item','').lower()  # TeamItem => team
+
+class MultiCSVItemPipeline(object):
+    SaveTypes = ['ArticleItem','CommentItem','CommenterItem']
+
+    def open_spider(self, spider):
+        self.files = dict([ (name, open(name+'.csv','w+b')) for name in self.SaveTypes ])
+        self.exporters = dict([ (name,CsvItemExporter(self.files[name])) for name in self.SaveTypes])
+        [e.start_exporting() for e in self.exporters.values()]
+
+    def close_spider(self, spider):
+        [e.finish_exporting() for e in self.exporters.values()]
+        [f.close() for f in self.files.values()]
+
+    def process_item(self, item, spider):
+        what = type(item).__name__
+        if what in set(self.SaveTypes):
+            self.exporters[what].export_item(item)
+        return item
+    
 
 class BadScrapePipeline:
     def open_spider(self, spider):
         self.datetimenow = datetime.now().strftime("%Y%m%d_%H%M%S")
-        badfilepath = f"data/badfiles/{self.datetimenow}.jl"
-        if not os.path.exists("data/badfiles"):
-            os.makedirs("data/badfiles")     
-        self.file = open(badfilepath, "w")
-        # open bad files folder 
+        badfilepath = f"data/badfiles/{spider.name}"
+        if not os.path.exists(badfilepath):
+            os.makedirs(badfilepath)
+        self.file = open(f"{badfilepath}/{self.datetimenow}.jl", "w")
+        # open bad files folder
 
     def Attrcheck(self, item, attr):
         if not item.get(attr):
@@ -31,7 +56,7 @@ class BadScrapePipeline:
         # if doesn't have fields, send to badfiles folder
         req_attrs = ["Body", "Headline"]
         for attr in req_attrs:
-            self.Attrcheck(item, attr) 
+            self.Attrcheck(item, attr)
         return item
 
     def close_spider(self, spider):

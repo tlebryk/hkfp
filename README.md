@@ -1,3 +1,5 @@
+Has spiders for both HKFP and for global times.
+
 Steps to recreate:
 
 1. run getsitemaps.py
