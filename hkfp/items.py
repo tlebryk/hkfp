@@ -14,7 +14,7 @@ class ArticleItem:
     Art_id: str
     Original_url: str
     Response_url: str
-    Headline: str
+    Headline: str = ""
     Author: str
     Topics: list
     Body: str

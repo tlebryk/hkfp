@@ -37,11 +37,16 @@ class GlobaltimesSpider(scrapy.Spider):
     #         }
     #     }
     # }
+    # def __init__(self, name=None, **kwargs):
+    #     self.uri = "s3://globaltimes/data/allscrape_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+    #     super().__init__(name=name, **kwargs)
 
     def parse(self, response):
-        yield self.parse_search(response)
+        logging.info("before parsesearchon first page")
+        # yield self.parse_search(response)
+        logging.info("after parsesearchon first page")
         lastpg = int(response.css("a.btn::text").getall()[-3].strip())
-        for i in range(2, lastpg)[:2]:  # TODO: delete [:] which constrains for testing
+        for i in range(1, lastpg)[:2]:  # TODO: delete [:] which constrains for testing
             url = f"https://search.globaltimes.cn/QuickSearchCtrl?page_no={i}&search_txt=hong+kong"
             logging.info(f"Working on {url}")
             yield scrapy.Request(url=url, callback=self.parse_search)
@@ -80,9 +85,10 @@ class GlobaltimesSpider(scrapy.Spider):
         title = extract_text(
             response.css("title").get()
         )  # title we need for disqus request
-        headline = (
-            extract_text(response.xpath("//h1").get()),
+        headline = extract_text(
+            response.css("div.article_title").get()
         )  # headline we need for vader
+        logging.info(f"headline: {headline}")
         vader = sid.polarity_scores(headline)
         article = ArticleItem(
             Date=date,

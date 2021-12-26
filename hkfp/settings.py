@@ -81,7 +81,7 @@ current_credentials = credentials.get_frozen_credentials()
 ITEM_PIPELINES = {
     "hkfp.pipelines.BadScrapePipeline": 300,
     "hkfp.pipelines.MultiCSVItemPipeline": 400,
-    "scrapy.pipelines.files.S3FilesStore": 500,
+    # "scrapy.pipelines.files.S3FilesStore": 500,
 }
 
 FEEDS = {
