@@ -6,7 +6,8 @@ import re
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from datetime import datetime
 import os
-from selenium import webdriver
+
+# from selenium import webdriver
 from hkfp.items import CommenterItem, CommentItem, ArticleItem
 
 CURRENTDIR = os.getcwd()
@@ -36,9 +37,6 @@ class GlobaltimesSpider(scrapy.Spider):
     #         }
     #     }
     # }
-
-    def __init__(self):
-        self.driver = webdriver.Firefox()
 
     def parse(self, response):
         yield self.parse_search(response)
