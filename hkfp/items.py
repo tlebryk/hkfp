@@ -14,7 +14,8 @@ class ArticleItem:
     Art_id: str
     Original_url: str
     Response_url: str
-    Headline: str = ""
+    Headline: str  # headline as displayed on page
+    Title: str  # from title meta at top of page; often contains - Globaltimes
     Author: str
     Topics: list
     Body: str

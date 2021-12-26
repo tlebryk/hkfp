@@ -42,9 +42,9 @@ class GlobaltimesSpider(scrapy.Spider):
     #     super().__init__(name=name, **kwargs)
 
     def parse(self, response):
-        logging.info("before parsesearchon first page")
+        # logging.info("before parsesearchon first page")
         # yield self.parse_search(response)
-        logging.info("after parsesearchon first page")
+        # logging.info("after parsesearchon first page")
         lastpg = int(response.css("a.btn::text").getall()[-3].strip())
         for i in range(1, lastpg)[:2]:  # TODO: delete [:] which constrains for testing
             url = f"https://search.globaltimes.cn/QuickSearchCtrl?page_no={i}&search_txt=hong+kong"
