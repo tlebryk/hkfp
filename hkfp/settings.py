@@ -17,7 +17,7 @@ NEWSPIDER_MODULE = "hkfp.spiders"
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.55 Safari/537.36 Edg/96.0.1054.34"
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+# ROBOTSTXT_OBEY = True
 
 from boto3 import Session
 from dotenv import load_dotenv
@@ -84,12 +84,12 @@ ITEM_PIPELINES = {
     # "scrapy.pipelines.files.S3FilesStore": 500,
 }
 
-FEEDS = {
-    f"s3://hkfp/data/allscrape_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv": {
-        "format": "csv",
-        "encoding": "utf8",
-    }
-}
+# FEEDS = {
+#     f"s3://hkfp/data/allscrape_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv": {
+#         "format": "csv",
+#         "encoding": "utf8",
+#     }
+# }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html

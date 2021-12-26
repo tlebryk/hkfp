@@ -13,17 +13,28 @@ import os
 import json
 from scrapy.exporters import CsvItemExporter
 from scrapy import signals
+from datetime import datetime
+
+DATETIMENOW = datetime.now().strftime("%Y%m%d_%H%M%S")
 
 
 def item_type(item):
-    return type(item).__name__.replace('Item','').lower()  # TeamItem => team
+    return type(item).__name__.replace("Item", "").lower()  # TeamItem => team
+
 
 class MultiCSVItemPipeline(object):
-    SaveTypes = ['ArticleItem','CommentItem','CommenterItem']
+    SaveTypes = ["ArticleItem", "CommentItem", "CommenterItem"]
 
     def open_spider(self, spider):
-        self.files = dict([ (name, open(name+'.csv','w+b')) for name in self.SaveTypes ])
-        self.exporters = dict([ (name,CsvItemExporter(self.files[name])) for name in self.SaveTypes])
+        self.files = dict(
+            [
+                (name, open(f"{name}_{DATETIMENOW}.csv", "w+b"))
+                for name in self.SaveTypes
+            ]
+        )
+        self.exporters = dict(
+            [(name, CsvItemExporter(self.files[name])) for name in self.SaveTypes]
+        )
         [e.start_exporting() for e in self.exporters.values()]
 
     def close_spider(self, spider):
@@ -31,11 +42,11 @@ class MultiCSVItemPipeline(object):
         [f.close() for f in self.files.values()]
 
     def process_item(self, item, spider):
-        what = type(item).__name__
-        if what in set(self.SaveTypes):
-            self.exporters[what].export_item(item)
+        whatype = type(item).__name__
+        if whatype in set(self.SaveTypes):
+            self.exporters[whatype].export_item(item)
         return item
-    
+
 
 class BadScrapePipeline:
     def open_spider(self, spider):
@@ -47,16 +58,18 @@ class BadScrapePipeline:
         # open bad files folder
 
     def Attrcheck(self, item, attr):
-        if not item.get(attr):
+        if not ItemAdapter(item).asdict().get(attr):
             line = json.dumps(ItemAdapter(item).asdict()) + "\n"
             self.file.write(line)
             raise DropItem(f"No {attr} in {item}")
 
     def process_item(self, item, spider):
         # if doesn't have fields, send to badfiles folder
-        req_attrs = ["Body", "Headline"]
-        for attr in req_attrs:
-            self.Attrcheck(item, attr)
+        whatype = type(item).__name__
+        if whatype == "ArticleItem":
+            req_attrs = ["Body", "Headline"]
+            for attr in req_attrs:
+                self.Attrcheck(item, attr)
         return item
 
     def close_spider(self, spider):
