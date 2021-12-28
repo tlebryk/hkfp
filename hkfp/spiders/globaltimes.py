@@ -66,7 +66,7 @@ class GlobaltimesSpider(scrapy.Spider):
                     date = date[:index].strip()
             if url:
                 yield response.follow(
-                    url, callback=self.page_parse, cb_kwargs={"date": date, search_url=response.url}
+                    url, callback=self.page_parse, cb_kwargs={"date": date, "search_url": response.url}
                 )
             else:
                 logging.warning("could not find url for page...")
@@ -102,7 +102,7 @@ class GlobaltimesSpider(scrapy.Spider):
             # haven't found any multi author pieces...
             Topics=(
                 extract_text(response.css("div.span9.text-muted").get())
-                .removeprefix("Posted in:")
+                .replace("Posted in:", "")
                 .strip()
             ),
             Body=extract_text(response.css("div.article_content").get()),
