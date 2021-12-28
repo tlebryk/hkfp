@@ -26,9 +26,13 @@ class MultiCSVItemPipeline(object):
     SaveTypes = ["ArticleItem", "CommentItem", "CommenterItem"]
 
     def open_spider(self, spider):
+        for name in self.SaveTypes:
+            path = f"data/{spider.name}/{name}"
+            if not os.path.exists(path):
+                os.makedirs(path)
         self.files = dict(
             [
-                (name, open(f"{name}_{DATETIMENOW}.csv", "w+b"))
+                (name, open(f"data/{spider.name}/{name}/{DATETIMENOW}.csv", "w+b"))
                 for name in self.SaveTypes
             ]
         )

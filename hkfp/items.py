@@ -43,6 +43,7 @@ class ArticleItem:
     link: str = ""
     slug: str = ""
     forum: str = ""
+    identifier: str = ""
 
 
 @dataclass
@@ -56,6 +57,8 @@ class CommentItem:
     id: int
     createdAt: str
     commenterid: int  # get author id and turn rest into commenter element
+    postid: int
+    # identifier: str
 
 
 @dataclass

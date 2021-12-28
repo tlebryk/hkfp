@@ -84,18 +84,16 @@ ITEM_PIPELINES = {
     # "scrapy.pipelines.files.S3FilesStore": 500,
 }
 
-# FEEDS = {
-#     f"s3://hkfp/data/allscrape_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv": {
-#         "format": "csv",
-#         "encoding": "utf8",
-#     }
-# }
+# FEED_URI = "s3://globaltimes/data/test_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+
+
+# FILES_STORE = "s3://globaltimes/data/2/%(name)s/allscrape_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
 AUTOTHROTTLE_ENABLED = True
 # The initial download delay
-AUTOTHROTTLE_START_DELAY = 5
+AUTOTHROTTLE_START_DELAY = 10
 # The maximum download delay to be set in case of high latencies
 AUTOTHROTTLE_MAX_DELAY = 60
 # The average number of requests Scrapy should be sending in parallel to

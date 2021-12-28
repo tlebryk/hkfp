@@ -25,26 +25,30 @@ logging.basicConfig(
 sid = SentimentIntensityAnalyzer()
 
 
-
 class GlobaltimesSpider(scrapy.Spider):
     name = "globaltimes"
     # allowed_domains = ["globaltimes.cn"]
     start_urls = ["https://search.globaltimes.cn/QuickSearchCtrl?search_txt=hong+kong"]
-    custom_settings = {
-        "FEEDS": {
-            f"s3://globaltimes/data/allscrape_{datetime.now().strftime('%Y%m%d_%H%M%S')}": {
-                "format": "csv",
-                "encoding": "utf8",
-            }
-        }
-    }
+    # custom_settings = {
+    #     "FEEDS": {
+    #         f"s3://globaltimes/data/allscrape_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv": {
+    #             "format": "csv",
+    #             "encoding": "utf8",
+    #         },
+    #         f"data/allscrape_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv": {
+    #             "format": "csv",
+    #             "encoding": "utf8",
+    #         },
+    #     }
+    # }
+    uri = f"s3://globaltimes/data/allscrape_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
     # def __init__(self, name=None, **kwargs):
     #     self.uri = "s3://globaltimes/data/allscrape_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
     #     super().__init__(name=name, **kwargs)
 
     def parse(self, response):
         lastpg = int(response.css("a.btn::text").getall()[-3].strip())
-        for i in range(1, lastpg)[:2]:  # TODO: delete [:] which constrains for testing
+        for i in range(1, lastpg):  # TODO: delete [:] which constrains for testing
             url = f"https://search.globaltimes.cn/QuickSearchCtrl?page_no={i}&search_txt=hong+kong"
             logging.info(f"Working on {url}")
             yield scrapy.Request(url=url, callback=self.parse_search)
@@ -52,7 +56,7 @@ class GlobaltimesSpider(scrapy.Spider):
     def parse_search(self, response):
         logging.info(f"parse_searching {response.url}")
         articles = response.css("div.row-fluid:not(.pages):not(.body-fluid)")
-        for art in articles[:2]: # TODO: remove [] which controls/ limits rate. 
+        for art in articles:  # TODO: remove [] which controls/ limits rate.
             url = art.css("a::attr(href)").get()
             date = art.css("small")
             if date:
@@ -150,6 +154,7 @@ class GlobaltimesSpider(scrapy.Spider):
         article.link = thread["link"]
         article.slug = thread["slug"]
         article.forum = thread["forum"]
+        article.identifier = thread["identifiers"][0]
         yield article
         posts = r["posts"]
         for post in posts:
@@ -163,6 +168,7 @@ class GlobaltimesSpider(scrapy.Spider):
                 id=int(post["id"]),
                 createdAt=post["createdAt"],
                 commenterid=int(post["author"]["id"]),
+                postid=int(article.Art_id),
             )
             yield comment
             auth = post["author"]
