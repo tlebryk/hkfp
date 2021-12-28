@@ -12,6 +12,7 @@ from dataclasses import dataclass
 class ArticleItem:
     Date: str
     Art_id: str
+    Search_url: str
     Original_url: str
     Response_url: str
     Headline: str  # headline as displayed on page

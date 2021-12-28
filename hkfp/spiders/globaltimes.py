@@ -41,14 +41,14 @@ class GlobaltimesSpider(scrapy.Spider):
     #         },
     #     }
     # }
-    uri = f"s3://globaltimes/data/allscrape_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+    # uri = f"s3://globaltimes/data/allscrape_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
     # def __init__(self, name=None, **kwargs):
     #     self.uri = "s3://globaltimes/data/allscrape_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
     #     super().__init__(name=name, **kwargs)
 
     def parse(self, response):
         lastpg = int(response.css("a.btn::text").getall()[-3].strip())
-        for i in range(1, lastpg):  # TODO: delete [:] which constrains for testing
+        for i in range(1, lastpg+1):  # TODO: delete [:] which constrains for testing
             url = f"https://search.globaltimes.cn/QuickSearchCtrl?page_no={i}&search_txt=hong+kong"
             logging.info(f"Working on {url}")
             yield scrapy.Request(url=url, callback=self.parse_search)
@@ -65,16 +65,13 @@ class GlobaltimesSpider(scrapy.Spider):
                 if index != -1:
                     date = date[:index].strip()
             if url:
-                # self.driver.get(url)
-
-                # self.driver.close()
                 yield response.follow(
-                    url, callback=self.page_parse, cb_kwargs={"date": date}
+                    url, callback=self.page_parse, cb_kwargs={"date": date, search_url=response.url}
                 )
             else:
                 logging.warning("could not find url for page...")
 
-    def page_parse(self, response, date):
+    def page_parse(self, response, date, search_url):
         logging.info(f"pageparsing {response.url}")
         original_url = response.request.meta.get("redirect_urls", response.request.url)
         Response_url = response.request.url
@@ -93,6 +90,7 @@ class GlobaltimesSpider(scrapy.Spider):
         vader = sid.polarity_scores(headline)
         article = ArticleItem(
             Date=date,
+            Search_url=search_url,
             Art_id=art_id,
             Original_url=response.request.meta.get(
                 "redirect_urls", response.request.url
