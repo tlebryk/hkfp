@@ -1,6 +1,7 @@
 from datetime import datetime
 import scrapy
-from nltk.sentiment.vader import SentimentIntensityAnalyzer
+
+# from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
 # import nltk
 import pandas as pd
@@ -20,13 +21,15 @@ logging.basicConfig(
     level=logging.INFO,
     datefmt="%Y-%m-%d %H:%M:%S",
 )
-sid = SentimentIntensityAnalyzer()
+# sid = SentimentIntensityAnalyzer()
 
 
 class HKFPSpider(scrapy.Spider):
     name = "hkfp"
-
-    start_urls = pd.read_csv(fr"data/urls/posts.csv").url.to_list()[:5]
+    try:
+        start_urls = pd.read_csv(rf"data/urls/posts.csv").url.to_list()[:5]
+    except:
+        start_urls = []
     logging.info(start_urls)
 
     def parse(self, response):
@@ -51,7 +54,7 @@ class HKFPSpider(scrapy.Spider):
             "Topics": response.xpath('//span[@class="tags-links"]/a/text()').getall(),
             "Body": body,
         }
-        row["VADER_Compound"] = sid.polarity_scores(row["Headline"])["compound"]
+        # row["VADER_Compound"] = sid.polarity_scores(row["Headline"])["compound"]
         yield row
 
 

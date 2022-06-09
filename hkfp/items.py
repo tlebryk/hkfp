@@ -20,10 +20,10 @@ class ArticleItem:
     Author: str
     Topics: list
     Body: str
-    VADER_neg: float
-    VADER_neu: float
-    VADER_pos: float
-    VADER_compound: float
+    # VADER_neg: float
+    # VADER_neu: float
+    # VADER_pos: float
+    # VADER_compound: float
     feed: str = ""
     clean_title: str = ""
     dislikes: int = 0

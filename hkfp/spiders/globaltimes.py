@@ -3,7 +3,8 @@ import scrapy
 import logging
 from html_text import extract_text
 import re
-from nltk.sentiment.vader import SentimentIntensityAnalyzer
+
+# from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from datetime import datetime
 import os
 
@@ -22,7 +23,7 @@ logging.basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S",
 )
 
-sid = SentimentIntensityAnalyzer()
+# sid = SentimentIntensityAnalyzer()
 
 
 class GlobaltimesSpider(scrapy.Spider):
@@ -48,7 +49,7 @@ class GlobaltimesSpider(scrapy.Spider):
 
     def parse(self, response):
         lastpg = int(response.css("a.btn::text").getall()[-3].strip())
-        for i in range(1, lastpg+1):  # TODO: delete [:] which constrains for testing
+        for i in range(1, lastpg + 1):  # TODO: delete [:] which constrains for testing
             url = f"https://search.globaltimes.cn/QuickSearchCtrl?page_no={i}&search_txt=hong+kong"
             logging.info(f"Working on {url}")
             yield scrapy.Request(url=url, callback=self.parse_search)
@@ -66,7 +67,9 @@ class GlobaltimesSpider(scrapy.Spider):
                     date = date[:index].strip()
             if url:
                 yield response.follow(
-                    url, callback=self.page_parse, cb_kwargs={"date": date, "search_url": response.url}
+                    url,
+                    callback=self.page_parse,
+                    cb_kwargs={"date": date, "search_url": response.url},
                 )
             else:
                 logging.warning("could not find url for page...")
@@ -87,7 +90,7 @@ class GlobaltimesSpider(scrapy.Spider):
         headline = extract_text(
             response.css("div.article_title").get()
         )  # headline we need for vader
-        vader = sid.polarity_scores(headline)
+        # vader = sid.polarity_scores(headline)
         article = ArticleItem(
             Date=date,
             Search_url=search_url,
@@ -106,10 +109,10 @@ class GlobaltimesSpider(scrapy.Spider):
                 .strip()
             ),
             Body=extract_text(response.css("div.article_content").get()),
-            VADER_neg=vader["neg"],
-            VADER_neu=vader["neu"],
-            VADER_pos=vader["pos"],
-            VADER_compound=vader["compound"],
+            # VADER_neg=vader["neg"],
+            # VADER_neu=vader["neu"],
+            # VADER_pos=vader["pos"],
+            # VADER_compound=vader["compound"],
         )
         commenturl = f"https://disqus.com/embed/comments/?base=default&f=globaltimes&t_i={art_id}&t_u={Response_url}&t_d={title}&t_t={title}&s_o=default"
         yield response.follow(
