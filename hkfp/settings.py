@@ -19,29 +19,34 @@ USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTM
 # Obey robots.txt rules
 # ROBOTSTXT_OBEY = True
 
-from boto3 import Session
+# from boto3 import Session
 from dotenv import load_dotenv
 from datetime import datetime
 
 load_dotenv()
 
-session = Session()
-credentials = session.get_credentials()
+# session = Session()
+# credentials = session.get_credentials()
 # Credentials are refreshable, so accessing your access key / secret key
 # separately can lead to a race condition. Use this to get an actual matched
 # set.
-current_credentials = credentials.get_frozen_credentials()
+# current_credentials = credentials.get_frozen_credentials()
 # AWS_ACCESS_KEY_ID=current_credentials.access_key
 # AWS_SECRET_ACCESS_KEY=current_credentials.secret_key
 
 
+FEED_EXPORTERS = {
+    "jsonlines": "scrapy.exporters.JsonLinesItemExporter",
+}
+FEED_FORMAT = "jsonlines"
+# FEED_URI = "test.jl"
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 # CONCURRENT_REQUESTS = 32
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-# DOWNLOAD_DELAY = 3
+DOWNLOAD_DELAY = 5
 # The download delay setting will honor only one of:
 # CONCURRENT_REQUESTS_PER_DOMAIN = 16
 # CONCURRENT_REQUESTS_PER_IP = 16
@@ -78,11 +83,11 @@ current_credentials = credentials.get_frozen_credentials()
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-ITEM_PIPELINES = {
-    "hkfp.pipelines.BadScrapePipeline": 300,
-    "hkfp.pipelines.MultiCSVItemPipeline": 400,
-    # "scrapy.pipelines.files.S3FilesStore": 500,
-}
+# ITEM_PIPELINES = {
+# "hkfp.pipelines.BadScrapePipeline": 300,
+# "hkfp.pipelines.MultiCSVItemPipeline": 400,
+# "scrapy.pipelines.files.S3FilesStore": 500,
+# }
 
 # FEED_URI = "s3://globaltimes/data/test_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
 
