@@ -22,7 +22,8 @@ logging.basicConfig(
 class ChinaDailySpider(scrapy.Spider):
     name = "chinadaily"
     # allowed_domains = ["globaltimes.cn"]
-    start_url = "https://newssearch.chinadaily.com.cn/rest/en/search?publishedDateFrom=2011-01-01&publishedDateTo=2011-12-31&fullMust=hong+kong&channel=&type=&curType=story&sort=dp&duplication=on&page={}&type[0]=story&channel[0]=2@cndy&channel[1]=2@webnews&channel[2]=2@bw&channel[3]=2@hk&channel[4]=ismp@cndyglobal&source="
+    query = "alibaba"
+    start_url = "https://newssearch.chinadaily.com.cn/rest/en/search?publishedDateFrom=2011-01-01&publishedDateTo=2021-12-31&fullMust={}&channel=&type=&curType=story&sort=dp&duplication=on&page={}&type[0]=story&channel[0]=2@cndy&channel[1]=2@webnews&channel[2]=2@bw&channel[3]=2@hk&channel[4]=ismp@cndyglobal&source="
     errors = []
     # custom_settings = {
     #     "FEEDS": {
@@ -42,10 +43,11 @@ class ChinaDailySpider(scrapy.Spider):
     #     super().__init__(name=name, **kwargs)
 
     def start_requests(self):
-        lastpg = 4753  # from prior research
-        lastpg = 450
+        # lastpg = 4753  # from prior research for hl=k
+        # lastpg = 803 idk where this was from
+        lastpg = 756
         for i in range(1, lastpg + 1):  # TODO: delete [:] which constrains for testing
-            url = self.start_url.format(i)
+            url = self.start_url.format(self.query, i)
             logging.info(f"Working on %s", url)
             yield scrapy.Request(
                 url=url, callback=self.parse_search, cb_kwargs={"pg_num": i}

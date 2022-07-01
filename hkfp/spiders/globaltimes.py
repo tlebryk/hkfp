@@ -29,7 +29,8 @@ logging.basicConfig(
 class GlobaltimesSpider(scrapy.Spider):
     name = "globaltimes"
     # allowed_domains = ["globaltimes.cn"]
-    start_urls = ["https://search.globaltimes.cn/QuickSearchCtrl?search_txt=hong+kong"]
+    # start_urls = ["https://search.globaltimes.cn/QuickSearchCtrl?search_txt=hong+kong"]
+    start_urls = ["https://search.globaltimes.cn/QuickSearchCtrl?search_txt=alibaba"]
     # custom_settings = {
     #     "FEEDS": {
     #         f"s3://globaltimes/data/allscrape_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv": {
@@ -50,7 +51,8 @@ class GlobaltimesSpider(scrapy.Spider):
     def parse(self, response):
         lastpg = int(response.css("a.btn::text").getall()[-3].strip())
         for i in range(1, lastpg + 1):  # TODO: delete [:] which constrains for testing
-            url = f"https://search.globaltimes.cn/QuickSearchCtrl?page_no={i}&search_txt=hong+kong"
+            # url = f"https://search.globaltimes.cn/QuickSearchCtrl?page_no={i}&search_txt=hong+kong"
+            url = f"https://search.globaltimes.cn/QuickSearchCtrl?page_no={i}&search_txt=alibaba"
             logging.info(f"Working on {url}")
             yield scrapy.Request(url=url, callback=self.parse_search)
 

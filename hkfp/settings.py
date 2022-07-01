@@ -83,11 +83,11 @@ DOWNLOAD_DELAY = 5
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-# ITEM_PIPELINES = {
-# "hkfp.pipelines.BadScrapePipeline": 300,
+ITEM_PIPELINES = {
+"hkfp.pipelines.BadScrapePipeline": 300,
 # "hkfp.pipelines.MultiCSVItemPipeline": 400,
 # "scrapy.pipelines.files.S3FilesStore": 500,
-# }
+}
 
 # FEED_URI = "s3://globaltimes/data/test_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
 

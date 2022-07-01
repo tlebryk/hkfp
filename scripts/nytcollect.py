@@ -5,18 +5,18 @@ import pandas as pd
 import boto3
 import logging
 
-logging.basicConfig(filename="scrape.log", level=logging.info)
+logging.basicConfig(filename="scrape.log", level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # from newsplease import NewsPlease
 
 # Parse article
 # s3 = boto3.client("s3")
-# s3.download_file("newyorktime", "nyt/clean_main.csv", "clean_main.csv")
+# s3.download_file("aliba", "nyt/clean_main.csv", "clean_main.csv")
 
-# df  =pd.read_csv("clean_main.csv")
-
-#  pd.read_csv(r"C:\Users\tlebr\OneDrive - pku.edu.cn\Thesis\data\nyt\clean_main.csv")
+df = pd.read_csv("clean_main.csv")
+print(df)
+# #  pd.read_csv(r"C:\Users\tlebr\OneDrive - pku.edu.cn\Thesis\data\nyt\clean_main.csv")
 
 
 def scrape(url):
@@ -45,6 +45,7 @@ def scrape(url):
 
 
 urls = df.head().web_url.tolist()
+print(urls)
 badurls = []
 objs = []
 for url in urls:
@@ -52,17 +53,29 @@ for url in urls:
         obj = scrape(url)
         if obj:
             objs.append(obj)
+        print(obj)
     except Exception as e:
         logger.error(e)
         badurls.append(url)
 
-maindf = pd.json_normalize(objs)  # .maintext.iloc[0]
-maindf.to_csv("nyt_full.csv")
 
 with open("badfiles.txt", "a") as f:
     for u in badurls:
         f.write(u)
 
+badurls2 = []
+for url in badurls:
+    try:
+        obj = scrape(url)
+        if obj:
+            objs.append(obj)
+    except Exception as e:
+        logger.error(e)
+        badurls2.append(url)
+
+maindf = pd.json_normalize(objs)  # .maintext.iloc[0]
+maindf.to_csv("./nyt_full.csv")
+print(maindf)
 # article.__dict__.keys()
 # article.meta_keywords
 # df.columns
@@ -71,6 +84,6 @@ with open("badfiles.txt", "a") as f:
 
 # url = "https://www.nytimes.com/2011/12/22/world/asia/hong-kong-culls-chickens-after-bird-flu-is-found.html"
 
-new = NewsPlease.from_url(url)
-maindf = pd.json_normalize(news.apply(lambda s: s.__dict__))  # .maintext.iloc[0]
-maindf.to_csv("nyt_full.csv")
+# new = NewsPlease.from_url(url)
+# maindf = pd.json_normalize(news.apply(lambda s: s.__dict__))  # .maintext.iloc[0]
+# maindf.to_csv("nyt_full.csv")
