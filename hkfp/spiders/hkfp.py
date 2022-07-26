@@ -47,6 +47,7 @@ class HKFPSpider(scrapy.Spider):
                 "redirect_urls", response.request.url
             ),
             "Response_url": response.request.url,
+            "Section": response.xpath('//a[@rel="category tag"]'),
             "Headline": extract_text(response.xpath("//h1").get()),
             "Author": extract_text(
                 response.css("span.author.vcard").get()
