@@ -20,6 +20,7 @@ class ArticleItem:
     Author: str
     Topics: list
     Body: str
+    Section: str
     # VADER_neg: float
     # VADER_neu: float
     # VADER_pos: float

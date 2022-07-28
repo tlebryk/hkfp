@@ -1,6 +1,6 @@
 #!/bin/bash
 source activate env/bin/activate
-
+# FOR CHINA DAILY hong kong ARTICLES
 # find last page
 # scrapy crawl chinadaily -O scratch12.jl -a year=2012
 # # do full run

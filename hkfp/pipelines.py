@@ -32,7 +32,13 @@ class MultiCSVItemPipeline(object):
                 os.makedirs(path)
         self.files = dict(
             [
-                (name, open(f"data/{spider.name}/{name}/{DATETIMENOW}.csv", "w+b"))
+                (
+                    name,
+                    open(
+                        f"data/{spider.name}/{name}/{spider.searchterm}_{DATETIMENOW}.csv",
+                        "w+b",
+                    ),
+                )
                 for name in self.SaveTypes
             ]
         )
@@ -58,7 +64,9 @@ class BadScrapePipeline:
         badfilepath = f"data/badfiles/{spider.name}"
         if not os.path.exists(badfilepath):
             os.makedirs(badfilepath)
-        self.file = open(f"{badfilepath}/{self.datetimenow}.jl", "w")
+        self.file = open(
+            f"{badfilepath}/{spider.searchterm}_{self.datetimenow}.jl", "w"
+        )
         # open bad files folder
 
     def Attrcheck(self, item, attr):

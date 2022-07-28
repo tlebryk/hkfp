@@ -30,7 +30,20 @@ class GlobaltimesSpider(scrapy.Spider):
     name = "globaltimes"
     # allowed_domains = ["globaltimes.cn"]
     # start_urls = ["https://search.globaltimes.cn/QuickSearchCtrl?search_txt=hong+kong"]
-    start_urls = ["https://search.globaltimes.cn/QuickSearchCtrl?search_txt=alibaba"]
+
+    custom_settings = {
+        "ITEM_PIPELINES": {
+            "hkfp.pipelines.MultiCSVItemPipeline": 400,
+        }
+    }
+
+    def __init__(self, searchterm) -> None:
+        self.searchterm = searchterm.replace(" ", "+")
+        self.start_urls = [
+            f"https://search.globaltimes.cn/QuickSearchCtrl?search_txt={self.searchterm}"
+        ]
+        super().__init__()
+
     # custom_settings = {
     #     "FEEDS": {
     #         f"s3://globaltimes/data/allscrape_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv": {
@@ -49,17 +62,17 @@ class GlobaltimesSpider(scrapy.Spider):
     #     super().__init__(name=name, **kwargs)
 
     def parse(self, response):
-        lastpg = int(response.css("a.btn::text").getall()[-3].strip())
+        lastpg = 2  # int(response.css("a.btn::text").getall()[-3].strip())
         for i in range(1, lastpg + 1):  # TODO: delete [:] which constrains for testing
             # url = f"https://search.globaltimes.cn/QuickSearchCtrl?page_no={i}&search_txt=hong+kong"
-            url = f"https://search.globaltimes.cn/QuickSearchCtrl?page_no={i}&search_txt=alibaba"
+            url = f"https://search.globaltimes.cn/QuickSearchCtrl?search_txt={self.searchterm}"
             logging.info(f"Working on {url}")
             yield scrapy.Request(url=url, callback=self.parse_search)
 
     def parse_search(self, response):
         logging.info(f"parse_searching {response.url}")
         articles = response.css("div.row-fluid:not(.pages):not(.body-fluid)")
-        for art in articles:  # TODO: remove [] which controls/ limits rate.
+        for art in articles[:3]:  # TODO: remove [] which controls/ limits rate.
             url = art.css("a::attr(href)").get()
             date = art.css("small")
             if date:
@@ -111,6 +124,7 @@ class GlobaltimesSpider(scrapy.Spider):
                 .strip()
             ),
             Body=extract_text(response.css("div.article_content").get()),
+            Section=response.xpath('//meta[@id="channel_name"]/@content').get()
             # VADER_neg=vader["neg"],
             # VADER_neu=vader["neu"],
             # VADER_pos=vader["pos"],
